@@ -1,0 +1,64 @@
+[
+{
+    "model": "library_app.appuser",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$30000$aOFVrPeI7Ga0$O23brslQn2CtGMbcrexYYmA0Zn4EQOydOpTGl+96AbM=",
+        "last_login": "2017-03-14T18:08:38Z",
+        "is_superuser": true,
+        "username": "ud",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2017-03-03T08:47:45Z",
+        "user_type": "(u'AD', u'Admin')",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "library_app.appuser",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$30000$ZNna111Pw6Vh$yU9xf3HdYwHfNd2HvwbDxweKY8hVtD3lovjaUpPDEDQ=",
+        "last_login": null,
+        "is_superuser": true,
+        "username": "ty",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2017-03-03T08:49:00Z",
+        "user_type": "0",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "library_app.status",
+    "pk": 1,
+    "fields": {
+        "code": "ADD",
+        "name": "Added in library"
+    }
+},
+{
+    "model": "library_app.status",
+    "pk": 2,
+    "fields": {
+        "code": "ISU",
+        "name": "Issued"
+    }
+},
+{
+    "model": "library_app.status",
+    "pk": 3,
+    "fields": {
+        "code": "RTRN",
+        "name": "Returned to library"
+    }
+}
+]
