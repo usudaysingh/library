@@ -34,6 +34,13 @@ class CreateBookSerializer(serializers.Serializer):
 		else:
 			return value
 
+	def validate_publishing_year(self,value):
+		if value < timezone.now().year:
+			return value
+		else:
+			msg= 'Please enter correct publication year'
+			raise serializers.ValidationError(msg)
+
 	def create(self, validated_data):
 		if validated_data['status_code'] == 'ADD':
 			validated_data['available'] = True
@@ -88,8 +95,8 @@ class UpdateBookSerializer(serializers.Serializer):
 	book_name = serializers.CharField(max_length=500)
 	author = serializers.CharField(max_length=500)
 	publisher = serializers.CharField()
-	publishing_year = serializers.CharField()
-	status_code = serializers.CharField()
+	publishing_year = serializers.IntegerField()
+	# status_code = serializers.CharField()
 
 	def validate_status_code(self, value):
 		status = Status.objects.filter(code=value)
@@ -100,6 +107,8 @@ class UpdateBookSerializer(serializers.Serializer):
 			return value
 
 	def validate_publishing_year(self,value):
+		print value
+		print timezone.now().year
 		if value < timezone.now().year:
 			return value
 		else:

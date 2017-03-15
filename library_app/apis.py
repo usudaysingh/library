@@ -106,9 +106,13 @@ class UpdateRetrieveBook(viewsets.ModelViewSet):
 		if book:
 			serializer = self.get_serializer(data = request.data)
 			if serializer.is_valid():
-				data = {
-				'goood':'goingggg'
-				}
+				request_data = serializer.data
+				data_keys = request_data.keys()
+				book = book[0]
+				for i in data_keys:
+					book[i] = request_data[i]
+				book.save()
+				return Response(serializer.data)
 		else:
 			error = {
 				'error' :'Book does not exist please enter correct book id.'
