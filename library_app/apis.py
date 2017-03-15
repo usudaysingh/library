@@ -2,9 +2,11 @@ import json
 import requests
 
 from django.contrib.auth.models import User, Group
+from django.utils import timezone 
 from rest_framework import viewsets
-from .models import Books #, Author, Publisher
-from .serializers import GetBookListSerializer,  CreateBookSerializer, RetrieveBookSerializer, UpdateBookSerializer
+from .models import Books,BookStatus #, Author, Publisher
+from .serializers import GetBookListSerializer,  CreateBookSerializer, RetrieveBookSerializer, UpdateBookSerializer,\
+	BookStatusSerializer
 from rest_framework.response import Response
 from rest_framework import permissions
 
@@ -119,3 +121,28 @@ class UpdateRetrieveBook(viewsets.ModelViewSet):
 			}
 			return Response(error)
 		return Response(serializer.errors)
+
+class UpdateBookStatus(viewsets.ModelViewSet):
+	serializer_class = BookStatusSerializer
+	model = Books
+	permission_classes = (UserPermission,)
+
+	def update(self,request,*args,**kwargs):
+		book_id = kwargs.get('book_id')
+		try:
+			book = self.model.objects.get(book_id=book_id)
+			serializer = self.get_serializer(data=request.data)
+			if serializer.is_valid():
+				data = serializer.data
+				data['at'] = timezone.now
+				print data
+				book.status_history.append(BookStatus(**data))
+				book.save()
+				return Response(serializer.data)
+			else:
+				return Response(serializer.error)
+		except Exception as ObjectDoesNotExist:
+			error = {
+				'error' :'Book does not exist please enter correct book id.'
+			}
+			return Response(error)

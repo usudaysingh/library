@@ -6,10 +6,18 @@ from .models import Books, Status, BookStatus
 
 class BookStatusSerializer(serializers.Serializer):
 	by = serializers.CharField()
-	at = serializers.DateTimeField(default=timezone.now)
+	# at = serializers.DateTimeField(default=timezone.now)
 	status =  serializers.CharField()
 	reader =  serializers.CharField()
 	status_code = serializers.CharField()
+
+	def validate_status_code(self,value):
+		status = Status.objects.filter(code=value)
+		if not status:
+			msg = 'Please enter correct status code'
+			raise serializers.ValidationError(msg)
+		else:
+			return value
 
 class CreateBookSerializer(serializers.Serializer):
 	book_name = serializers.CharField(max_length=500, required=True)
