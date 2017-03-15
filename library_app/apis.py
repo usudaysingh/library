@@ -90,14 +90,28 @@ class UpdateRetrieveBook(viewsets.ModelViewSet):
 
 	def retrieve(self, request, *args, **kwargs):
 		book_id = kwargs.get('book_id')
-		data = self.model.objects.get(book_id=book_id)
-		serializer = self.get_serializer(data)
-		return Response(serializer.data)
+		try:
+			data = self.model.objects.get(book_id=book_id)
+			serializer = self.get_serializer(data)
+			return Response(serializer.data)
+		except Exception as ObjectDoesNotExist:
+			error = {
+				'error' :'Book does not exist please enter correct book id.'
+			}
+			return Response(error)
 
 	def update(self, request, *args, **kwargs):
-		serializer = self.get_serializer(data = request.data)
-		if serializer.is_valid():
-			data = {
-			'goood':'goingggg'
+		book_id = kwargs.get('book_id')
+		book = self.model.objects.filter(book_id=book_id)
+		if book:
+			serializer = self.get_serializer(data = request.data)
+			if serializer.is_valid():
+				data = {
+				'goood':'goingggg'
+				}
+		else:
+			error = {
+				'error' :'Book does not exist please enter correct book id.'
 			}
+			return Response(error)
 		return Response(serializer.errors)
