@@ -4,11 +4,13 @@ import requests
 from django.contrib.auth.models import User, Group
 from django.utils import timezone 
 from rest_framework import viewsets
-from .models import Books,BookStatus #, Author, Publisher
+from .models import Books, BookStatus, BooksFlow #, Author, Publisher
 from .serializers import GetBookListSerializer,  CreateBookSerializer, RetrieveBookSerializer, UpdateBookSerializer,\
 	BookStatusSerializer
 from rest_framework.response import Response
 from rest_framework import permissions
+from django_fsm import can_proceed
+from django.core.exceptions import PermissionDenied
 
 class UserPermission(permissions.BasePermission):
     """
@@ -133,13 +135,23 @@ class UpdateBookStatus(viewsets.ModelViewSet):
 			book = self.model.objects.get(book_id=book_id)
 			serializer = self.get_serializer(data=request.data)
 			if serializer.is_valid():
+				flow = BooksFlow.objects.get_or_create(name=book.book_name)
+				flow = flow[0]
+				# To check for issue
+				if not can_proceed(flow.issue):
+					error = {
+						'error':'TransitionNotAllowed:'
+					}
+					return Response(error)
+
 				data = serializer.data
 				data['at'] = timezone.now
 				book.status_history.append(BookStatus(**data))
 				book.save()
+				flow.save()
 				return Response(serializer.data)
 			else:
-				return Response(serializer.error)
+				return Response(serializer.errors)
 		except Exception as ObjectDoesNotExist:
 			error = {
 				'error' :'Book does not exist please enter correct book id.'

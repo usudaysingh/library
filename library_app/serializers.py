@@ -6,7 +6,7 @@ from .models import Books, Status, BookStatus
 
 class BookStatusSerializer(serializers.Serializer):
 	by = serializers.CharField()
-	at = serializers.DateTimeField()
+	at = serializers.DateTimeField(default=timezone.now)
 	status =  serializers.CharField()
 	reader =  serializers.CharField()
 	status_code = serializers.CharField()
@@ -25,7 +25,7 @@ class CreateBookSerializer(serializers.Serializer):
 	publisher = serializers.CharField(max_length=500, required=True)
 	publishing_year = serializers.IntegerField(required=True)
 	# status_history = serializers.ListField(child=serializers.CharField())
-	status_code = serializers.CharField(max_length=10,required=True)
+	# status_code = serializers.CharField(max_length=10,required=True)
 
 	# class Meta:
 	# 	# Each room only has one event per day.
@@ -50,16 +50,15 @@ class CreateBookSerializer(serializers.Serializer):
 			raise serializers.ValidationError(msg)
 
 	def create(self, validated_data):
-		if validated_data['status_code'] == 'ADD':
-			validated_data['available'] = True
-			status = {
-				'by':'uday',
-				'at':timezone.now(),
-				'status':'Added in library',
-				'status_code':validated_data['status_code'],
-				'reader':'dolly'
-			}
-			validated_data['added_in_library']=timezone.now()
+		validated_data['available'] = True
+		status = {
+			'by':'uday',
+			'at':timezone.now(),
+			'status':'Added in library',
+			'status_code':validated_data['status_code'],
+			'reader':'dolly'
+		}
+		validated_data['added_in_library']=timezone.now()
 		book_instance = Books(**validated_data)
 		book_instance.status_history.append(BookStatus(**status))
 		book_instance.save()
