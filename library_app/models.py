@@ -29,7 +29,7 @@ class AppUser(AbstractUser):
 
 	def save(self, *args, **kwargs):
 		if self.is_superuser:
-			self.user_type = self.type_choices[0]
+			self.user_type = 'MNGR'
 		super(AppUser, self).save(*args, **kwargs)
 
 # class Books(models.Model):
