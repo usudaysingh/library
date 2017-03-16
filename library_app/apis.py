@@ -12,7 +12,7 @@ from rest_framework import permissions
 
 class UserPermission(permissions.BasePermission):
     """
-    Global permission check for blacklisted IPs.
+   Check Permission before performing operation
     """
 
     def has_permission(self, request, view):
