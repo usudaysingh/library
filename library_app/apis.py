@@ -143,12 +143,13 @@ class UpdateBookStatus(viewsets.ModelViewSet):
 						'error':'TransitionNotAllowed:'
 					}
 					return Response(error)
+				flow.issue()
+				flow.save()
 
 				data = serializer.data
 				data['at'] = timezone.now
 				book.status_history.append(BookStatus(**data))
 				book.save()
-				flow.save()
 				return Response(serializer.data)
 			else:
 				return Response(serializer.errors)
