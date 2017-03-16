@@ -135,7 +135,6 @@ class UpdateBookStatus(viewsets.ModelViewSet):
 			if serializer.is_valid():
 				data = serializer.data
 				data['at'] = timezone.now
-				print data
 				book.status_history.append(BookStatus(**data))
 				book.save()
 				return Response(serializer.data)

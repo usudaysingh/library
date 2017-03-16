@@ -6,7 +6,7 @@ from .models import Books, Status, BookStatus
 
 class BookStatusSerializer(serializers.Serializer):
 	by = serializers.CharField()
-	# at = serializers.DateTimeField(default=timezone.now)
+	at = serializers.DateTimeField()
 	status =  serializers.CharField()
 	reader =  serializers.CharField()
 	status_code = serializers.CharField()
@@ -54,7 +54,7 @@ class CreateBookSerializer(serializers.Serializer):
 			validated_data['available'] = True
 			status = {
 				'by':'uday',
-				'at':timezone.now,
+				'at':timezone.now(),
 				'status':'Added in library',
 				'status_code':validated_data['status_code'],
 				'reader':'dolly'
