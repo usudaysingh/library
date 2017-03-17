@@ -55,10 +55,11 @@ class CreateBookSerializer(serializers.Serializer):
 			'by':'uday',
 			'at':timezone.now(),
 			'status':'Added in library',
-			'status_code':validated_data['status_code'],
+			'status_code':'ADD',
 			'reader':'dolly'
 		}
 		validated_data['added_in_library']=timezone.now()
+		validated_data['available'] = True
 		book_instance = Books(**validated_data)
 		book_instance.status_history.append(BookStatus(**status))
 		book_instance.save()
