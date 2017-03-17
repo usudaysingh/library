@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from django.utils import timezone 
 
-from .models import Books, Status, BookStatus
+from .models import Books, Status, BookStatus, AppUser
 
 class BookStatusSerializer(serializers.Serializer):
 	by = serializers.CharField()
@@ -121,3 +121,27 @@ class UpdateBookSerializer(serializers.Serializer):
 		else:
 			msg= 'Please enter correct publication year'
 			raise serializers.ValidationError(msg)
+
+class UserSerializer(serializers.Serializer):
+	username = serializers.CharField()
+	email = serializers.CharField()
+	first_name = serializers.CharField()
+	last_name = serializers.CharField()
+	is_active = serializers.BooleanField(default=True)
+	user_type = serializers.CharField(default='ST')
+	password = serializers.CharField()
+	confirm_password = serializers.CharField()
+
+	def validate(self, data):
+		if data['password'] == data['confirm_password']:
+			return data
+		else:
+			raise serializers.ValidationError("Those passwords don't match.")
+
+	def save(self, validated_data):
+		password = validated_data.pop('password')
+		confirm_password = validated_data.pop('confirm_password')
+		student = AppUser(**validated_data)
+		student.set_password(password)
+		student.save()
+		return student

@@ -4,9 +4,9 @@ import requests
 from django.contrib.auth.models import User, Group
 from django.utils import timezone 
 from rest_framework import viewsets
-from .models import Books, BookStatus, BooksFlow #, Author, Publisher
+from .models import Books, BookStatus, BooksFlow, AppUser #, Author, Publisher
 from .serializers import GetBookListSerializer,  CreateBookSerializer, RetrieveBookSerializer, UpdateBookSerializer,\
-	BookStatusSerializer
+	BookStatusSerializer, UserSerializer
 from rest_framework.response import Response
 from rest_framework import permissions
 from django_fsm import can_proceed
@@ -158,3 +158,19 @@ class UpdateBookStatus(viewsets.ModelViewSet):
 				'error' :'Book does not exist please enter correct book id.'
 			}
 			return Response(error)
+
+class CreateNewUser(viewsets.ModelViewSet):
+	serializer_class = UserSerializer
+
+	def post(self, request, *args, **kwargs):
+		serializer = self.get_serializer(data = request.data)
+		if serializer.is_valid():
+			serialize_data = serializer.data
+			user_instance = serializer.save(serializer.data)
+			success = {
+			'success':'User created successfully',
+			'username':request.data['username']
+			}
+			return Response(success)
+		else:
+			return Response(serializer.errors)
