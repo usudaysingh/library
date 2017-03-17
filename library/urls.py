@@ -15,8 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from library_app.apis import CreateNewUser
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^library/', include('library_app.urls', namespace='library-app')),
+    url(r'^register/$',CreateNewUser.as_view({'post':'post'}), name='register-user')
 ]
