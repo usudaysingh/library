@@ -23,8 +23,11 @@ class UserPermission(permissions.BasePermission):
                 return True
             else:
                 return False
+        elif request.user.is_authenticated() and request.user.user_type == 'MNGR':
+        	return True
         else:
-            return True
+            if view.action == 'list' or view.action == 'retrieve':
+                return True
 
 class BookViewset(viewsets.ModelViewSet):
 	'''
