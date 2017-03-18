@@ -45,6 +45,7 @@ class AppUser(AbstractUser):
 # 		super(Books, self).save(*args, **kwargs)
 
 class BooksFlow(models.Model):
+	book_id = models.IntegerField(default='1')
 	name = models.CharField(max_length=100)
 	status = FSMField(default='ADD', protected=True)
 

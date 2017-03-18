@@ -138,7 +138,7 @@ class UpdateBookStatus(viewsets.ModelViewSet):
 			book = self.model.objects.get(book_id=book_id)
 			serializer = self.get_serializer(data=request.data)
 			if serializer.is_valid():
-				flow = BooksFlow.objects.get_or_create(name=book.book_name)
+				flow = BooksFlow.objects.get_or_create(book_id=book_id,name=book.book_name)
 				flow = flow[0]
 				# To check for issue
 				if not can_proceed(flow.issue):
