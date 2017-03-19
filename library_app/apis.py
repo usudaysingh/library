@@ -151,7 +151,7 @@ class UpdateBookStatus(viewsets.ModelViewSet):
 
 				data = serializer.data
 				data['at'] = timezone.now
-				if data['status_code'] in ['ISU','RMV']:
+				if data['status_code'] in ['ISU','RMV','RSU']:
 					book.available = False
 				else:
 					book.available = True
