@@ -155,9 +155,12 @@ class UpdateBookStatus(viewsets.ModelViewSet):
 					book.available = False
 				else:
 					book.available = True
+					# if datetime.datetime.now() - book.status_history[0].at == 7:
+
+				#now time datetime.datetime.now()
 				book.status_history.append(BookStatus(**data))
 				book.save()
-				return Response(serializer.data)
+				return Response(data)
 			else:
 				return Response(serializer.errors)
 		except Exception as ObjectDoesNotExist:

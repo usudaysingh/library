@@ -1,7 +1,7 @@
 {
 	"ADD": ["ISU", "RSU", "RMV"],
-	"ISU": ["ADD","RTN"], 
+	"ISU": ["ADD","RTRN"], 
 	"RSU": ["ISU"], 
-	"RTN": ["ISU","RSU"],
+	"RTRN": ["ISU","RSU"],
 	"RMV": ["ADD"]
 }
