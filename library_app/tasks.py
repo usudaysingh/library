@@ -5,4 +5,7 @@ from .models import Books
 
 @periodic_task(run_every=datetime.timedelta(seconds=1))
 def update_fine():
-	print "yahooo main to hu pagal"
+	books = Books.objects.all()
+	for book in books:
+		book.fine_amount = 90
+		book.save()
