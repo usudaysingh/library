@@ -1,5 +1,6 @@
 import json
 import requests
+import datetime
 
 from django.contrib.auth.models import User, Group
 from django.utils import timezone 
@@ -132,32 +133,54 @@ class UpdateBookStatus(viewsets.ModelViewSet):
 	model = Books
 	permission_classes = (UserPermission,)
 
+	def calculate_fine(self,book):
+		issued_date = book.status_history[-1].at.date()
+		current_date = datetime.datetime.now().date()
+		days = current_date - issued_date
+		if days > 7:
+			fine = ((days-7)*5)
+		else:
+			fine = 0
+		return fine
+
 	def update(self,request,*args,**kwargs):
 		book_id = kwargs.get('book_id')
 		try:
 			book = self.model.objects.get(book_id=book_id)
 			serializer = self.get_serializer(data=request.data)
 			if serializer.is_valid():
+				data = serializer.data
 				flow = BooksFlow.objects.get_or_create(book_id=book_id,name=book.book_name)
 				flow = flow[0]
 				# To check for issue
-				if not can_proceed(flow.issue):
+				if not can_proceed(flow.issue) or not can_proceed(flow.reissue) or not can_proceed(flow.remove) or not can_proceed(flow.returned):
 					error = {
-						'error':'TransitionNotAllowed:'
+						'error':'TransitionNotAllowed:',
+						'status':data['status_code']
 					}
 					return Response(error)
-				flow.issue()
-				flow.save()
 
-				data = serializer.data
 				data['at'] = timezone.now
+				fine = self.calculate_fine(book)
 				if data['status_code'] in ['ISU','RMV','RSU']:
+					if data['status_code'] == 'RSU':
+						flow.reissue()
+					elif data['status_code'] == 'ISU':
+						flow.issue()
+					elif data['status_code'] == 'RMV':
+						flow.remove()
+					else:
+						pass
+
+					if fine:
+						error = {
+							'error':'Please collect '+ str(fine) + 'rs.'
+						}
+						return Response(error)
 					book.available = False
+					flow.save()
 				else:
 					book.available = True
-					# if datetime.datetime.now() - book.status_history[0].at == 7:
-
-				#now time datetime.datetime.now()
 				book.status_history.append(BookStatus(**data))
 				book.save()
 				return Response(data)

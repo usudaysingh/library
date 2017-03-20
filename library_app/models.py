@@ -53,6 +53,18 @@ class BooksFlow(models.Model):
 	def issue(self):
 		pass
 
+	@transition(field=status, source=TRANSITION_MAP.get('RSU'), target='RSU')
+	def reissue(self):
+		pass
+
+	@transition(field=status, source=TRANSITION_MAP.get('RMV'), target='RMV')
+	def remove(self):
+		pass
+
+	@transition(field=status, source=TRANSITION_MAP.get('RTN'), target='RTN')
+	def returned(self):
+		pass
+
 class Status(models.Model):
 	code = models.CharField(max_length=10)
 	name = models.CharField(max_length=50)
@@ -73,6 +85,7 @@ class Books(mongoengine.DynamicDocument):
 	modified = mongoengine.DateTimeField(default=timezone.now)
 	publisher = mongoengine.StringField()
 	publishing_year = mongoengine.IntField()
+	fine_amount = mongoengine.IntField(default=0)
 	status_history = mongoengine.ListField(mongoengine.EmbeddedDocumentField(BookStatus))
 
 class Author(mongoengine.DynamicDocument):

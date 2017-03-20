@@ -32,6 +32,14 @@
     }
 },
 {
+    "model": "library_app.status",
+    "pk": 9,
+    "fields": {
+        "code": "RMV",
+        "name": "Remove"
+    }
+},
+{
     "model": "library_app.appuser",
     "pk": 1,
     "fields": {
