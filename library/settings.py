@@ -147,6 +147,8 @@ STATIC_URL = '/static/'
 # )
 
 # CELERY STUFF
+#To run celery
+#python manage.py celery worker -B --loglevel=info
 BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 CELERY_ACCEPT_CONTENT = ['application/json']
