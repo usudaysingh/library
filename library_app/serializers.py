@@ -98,6 +98,7 @@ class RetrieveBookSerializer(serializers.Serializer):
 	added_in_library = serializers.DateTimeField()
 	modified = serializers.DateTimeField()
 	publishing_year = serializers.CharField()
+	fine_amount = serializers.IntegerField()
 
 class UpdateBookSerializer(serializers.Serializer):
 	book_name = serializers.CharField(max_length=500)
