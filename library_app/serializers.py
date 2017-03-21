@@ -19,6 +19,7 @@ class BookStatusSerializer(serializers.Serializer):
 		else:
 			return value
 
+
 class CreateBookSerializer(serializers.Serializer):
 	book_name = serializers.CharField(max_length=500, required=True)
 	author = serializers.CharField(max_length=500, required=True)
@@ -42,6 +43,7 @@ class CreateBookSerializer(serializers.Serializer):
 		else:
 			return value
 
+
 	def validate_publishing_year(self,value):
 		if value < timezone.now().year:
 			return value
@@ -51,17 +53,18 @@ class CreateBookSerializer(serializers.Serializer):
 
 	def create(self, validated_data):
 		validated_data['available'] = True
-		status = {
+		add_status = {
 			'by':'uday',
 			'at':timezone.now(),
 			'status':'Added in library',
 			'status_code':'ADD',
 			'reader':'dolly'
 		}
-		validated_data['added_in_library']=timezone.now()
+		# validated_data['added_in_library']=timezone.now()
 		validated_data['available'] = True
 		book_instance = Books(**validated_data)
-		book_instance.status_history.append(BookStatus(**status))
+		book_instance.status.status_history.append(BookStatus(**add_status))
+		book_instance.status.latest_status = BookStatus(**add_status)
 		book_instance.save()
 		return book_instance
 		
@@ -88,13 +91,17 @@ class GetBookListSerializer(serializers.Serializer):
 		    for field_name in remove_fields:
 		        self.fields.pop(field_name)
 
+class LogBookStatusSerializer(serializers.Serializer):
+	status_history = BookStatusSerializer(many=True)
+	latest_status = BookStatusSerializer()
+
 class RetrieveBookSerializer(serializers.Serializer):
 	book_name = serializers.CharField(max_length=500)
 	book_id = serializers.CharField()
 	author = serializers.CharField(max_length=500)
 	publisher = serializers.CharField()
 	available = serializers.BooleanField()
-	status_history = BookStatusSerializer(many=True)
+	status = LogBookStatusSerializer()
 	added_in_library = serializers.DateTimeField()
 	modified = serializers.DateTimeField()
 	publishing_year = serializers.CharField()
@@ -107,13 +114,13 @@ class UpdateBookSerializer(serializers.Serializer):
 	publishing_year = serializers.IntegerField()
 	# status_code = serializers.CharField()
 
-	def validate_status_code(self, value):
-		status = Status.objects.filter(code=value)
-		if not status:
-			msg = 'Please enter correct status code'
-			raise serializers.ValidationError(msg)
-		else:
-			return value
+	# def validate_status_code(self, value):
+	# 	status = Status.objects.filter(code=value)
+	# 	if not status:
+	# 		msg = 'Please enter correct status code'
+	# 		raise serializers.ValidationError(msg)
+	# 	else:
+	# 		return value
 
 	def validate_publishing_year(self,value):
 		print value

@@ -133,15 +133,15 @@ class UpdateBookStatus(viewsets.ModelViewSet):
 	model = Books
 	permission_classes = (UserPermission,)
 
-	def calculate_fine(self,book):
-		issued_date = book.status_history[-1].at.date()
-		current_date = datetime.datetime.now().date()
-		days = current_date - issued_date
-		if days > 7:
-			fine = ((days-7)*5)
-		else:
-			fine = 0
-		return fine
+	# def calculate_fine(self,book):
+	# 	issued_date = book.status_history[-1].at.date()
+	# 	current_date = datetime.datetime.now().date()
+	# 	days = current_date - issued_date
+	# 	if days > 7:
+	# 		fine = ((days-7)*5)
+	# 	else:
+	# 		fine = 0
+	# 	return fine
 
 	def update(self,request,*args,**kwargs):
 		book_id = kwargs.get('book_id')
@@ -153,7 +153,28 @@ class UpdateBookStatus(viewsets.ModelViewSet):
 				flow = BooksFlow.objects.get_or_create(book_id=book_id,name=book.book_name)
 				flow = flow[0]
 				# To check for issue
-				if not can_proceed(flow.issue) or not can_proceed(flow.reissue) or not can_proceed(flow.remove) or not can_proceed(flow.returned):
+				if not can_proceed(flow.returned):
+					error = {
+						'error':'TransitionNotAllowed:',
+						'status':data['status_code']
+					}
+					return Response(error)
+
+				if not can_proceed(flow.reissue):
+					error = {
+						'error':'TransitionNotAllowed:',
+						'status':data['status_code']
+					}
+					return Response(error)
+
+				if not can_proceed(flow.remove):
+					error = {
+						'error':'TransitionNotAllowed:',
+						'status':data['status_code']
+					}
+					return Response(error)
+
+				if not can_proceed(flow.returned):
 					error = {
 						'error':'TransitionNotAllowed:',
 						'status':data['status_code']
@@ -161,7 +182,7 @@ class UpdateBookStatus(viewsets.ModelViewSet):
 					return Response(error)
 
 				data['at'] = timezone.now
-				fine = self.calculate_fine(book)
+				# fine = self.calculate_fine(book)
 				if data['status_code'] in ['ISU','RMV','RSU']:
 					if data['status_code'] == 'RSU':
 						flow.reissue()
@@ -172,18 +193,21 @@ class UpdateBookStatus(viewsets.ModelViewSet):
 					else:
 						pass
 
-					if fine:
-						error = {
-							'error':'Please collect '+ str(fine) + 'rs.'
-						}
-						return Response(error)
+					# if fine:
+					# 	error = {
+					# 		'error':'Please collect '+ str(fine) + 'rs.'
+					# 	}
+					# 	return Response(error)
 					book.available = False
-					flow.save()
 				else:
+					flow.returned()
 					book.available = True
-				book.status_history.append(BookStatus(**data))
+				status_data = BookStatus(**data)
+				book.status.status_history.append(status_data)
+				book.status.latest_status = status_data
 				book.save()
-				return Response(data)
+				flow.save()
+				return Response({'success':'Status Updated'})
 			else:
 				return Response(serializer.errors)
 		except Exception as ObjectDoesNotExist:

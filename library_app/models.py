@@ -76,17 +76,28 @@ class BookStatus(mongoengine.EmbeddedDocument):
 	status_code = mongoengine.StringField()
 	reader = mongoengine.StringField(blank=True)
 
+class StatusLog(mongoengine.EmbeddedDocument):
+	status_history = mongoengine.ListField(mongoengine.EmbeddedDocumentField(BookStatus))
+	latest_status = mongoengine.EmbeddedDocumentField(BookStatus)
+
 class Books(mongoengine.DynamicDocument):
 	book_name = mongoengine.StringField()
 	book_id = mongoengine.SequenceField()
 	author = mongoengine.StringField()
 	available = mongoengine.BooleanField()
 	added_in_library = mongoengine.DateTimeField()
-	modified = mongoengine.DateTimeField(default=timezone.now)
+	modified = mongoengine.DateTimeField()
 	publisher = mongoengine.StringField()
 	publishing_year = mongoengine.IntField()
 	fine_amount = mongoengine.IntField(default=0)
-	status_history = mongoengine.ListField(mongoengine.EmbeddedDocumentField(BookStatus))
+	status = mongoengine.EmbeddedDocumentField(StatusLog, default=StatusLog())
+	# status_history = mongoengine.ListField(mongoengine.EmbeddedDocumentField(BookStatus))
+
+	def save(self, *args, **kwargs):
+		if not self.added_in_library:
+			self.added_in_library = timezone.now()
+		self.modified = timezone.now()
+		super(Books, self).save(*args, **kwargs)
 
 class Author(mongoengine.DynamicDocument):
 	author_name = mongoengine.StringField()

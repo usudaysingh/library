@@ -9,3 +9,7 @@ def update_fine():
 	for book in books:
 		book.fine_amount = 90
 		book.save()
+
+@periodic_task(run_every=datetime.timedelta(seconds=1))
+def mje_lo():
+	print "maje lo"
