@@ -1,12 +1,16 @@
 from django.utils import timezone 
 
 from django.db import models
+from rest_framework.authtoken.models import Token
 from django_fsm import FSMField, transition
 
 import requests
 import os
 import mongoengine
 import json
+from django.dispatch import receiver
+from django.db.models.signals import pre_save, post_save
+from django.conf import settings
 
 from django.contrib.auth.models import AbstractUser
 
@@ -109,3 +113,8 @@ class Publisher(models.Model):
 	publisher_id = models.IntegerField()
 	# authors = models.ManyToManyField(Author)
 	# books = models.ManyToManyField(Books)
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)

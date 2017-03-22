@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'djcelery',
     'django_fsm',
     'rest_framework',
+    'rest_framework.authtoken',
     'library_app',
 ]
 
