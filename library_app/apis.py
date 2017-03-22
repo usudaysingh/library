@@ -68,12 +68,18 @@ class BookViewset(viewsets.ModelViewSet):
 
 	def list(self, request, *args, **kwargs):
 		queryset = self.get_queryset()
+		page = self.paginate_queryset(queryset)
 		fields = self.request.query_params.get('fields')
-		if fields:
-			fields = fields.split(',')
-			serialize = self.get_serializer(queryset, show_fields=fields, many=True)
-		else:
-			serialize = self.get_serializer(queryset, many=True)
+		if page is not None:
+			# serializer = self.get_serializer(page, many=True)
+			if fields:
+				fields = fields.split(',')
+				serialize = self.get_serializer(page, show_fields=fields, many=True)
+			else:
+				serialize = self.get_serializer(queryset, many=True)
+			return self.get_paginated_response(serialize.data)
+		
+		serialize = self.get_serializer(queryset, many=True)
 		return Response(serialize.data)
 
 
