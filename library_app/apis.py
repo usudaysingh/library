@@ -221,19 +221,3 @@ class UpdateBookStatus(viewsets.ModelViewSet):
 				'error' :'Book does not exist please enter correct book id.'
 			}
 			return Response(error)
-
-class CreateNewUser(viewsets.ModelViewSet):
-	serializer_class = UserSerializer
-
-	def post(self, request, *args, **kwargs):
-		serializer = self.get_serializer(data = request.data)
-		if serializer.is_valid():
-			serialize_data = serializer.data
-			user_instance = serializer.save(serializer.data)
-			success = {
-			'success':'User created successfully',
-			'username':request.data['username']
-			}
-			return Response(success)
-		else:
-			return Response(serializer.errors)

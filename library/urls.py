@@ -15,10 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from library_app.apis import CreateNewUser
+from library_app.user_auth import CreateNewUser
+from library_app.user_auth import AuthView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^library/', include('library_app.urls', namespace='library-app')),
-    url(r'^register/$',CreateNewUser.as_view({'post':'post'}), name='register-user')
+    url(r'^register/$',CreateNewUser.as_view({'post':'post'}), name='register-user'),
+    url(r'^login/$',AuthView.as_view({'post':'login' ,'get':'loginview'}), name='login'),
+    url(r'^logout/$',AuthView.as_view({'get':'logout'}), name='logout')
 ]
