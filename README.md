@@ -30,3 +30,7 @@
 
 ## Load Fixtures
 	python manage.py loaddata initial_data.json
+
+## Run Server
+	python manage.py runserver
+	open localhost:8000 in your browser
