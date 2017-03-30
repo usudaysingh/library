@@ -23,11 +23,10 @@
 ## Install Requirements
 	pip install -r requirements.txt
 
-## Create Database SQL
-	CREATE DATABASE library;
-	CREATE USER 'library'@'localhost' IDENTIFIED BY 'udaysingh';
-	USE library;
-	GRANT ALL PRIVILEGES ON *.* TO 'library'@'localhost';
+## Set Up MySQL
+	sudo apt-get install libmysqlclient-dev
+	sudo apt-get install mysql-server
+	mysql -u root -p --execute "create database library; grant all on library.* to library@localhost identified by 'udaysingh';"
 
 ## Load Fixtures
 	python manage.py loaddata initial_data.json
