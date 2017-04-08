@@ -75,7 +75,7 @@ class GetBookListSerializer(serializers.Serializer):
 	author = serializers.CharField(max_length=500)
 	publisher = serializers.CharField()
 	available = serializers.BooleanField()
-	#status_history = BookStatusSerializer(many=True)
+	# status_history = BookStatusSerializer(many=True)
 	added_in_library = serializers.DateTimeField()
 	modified = serializers.DateTimeField()
 
@@ -85,6 +85,7 @@ class GetBookListSerializer(serializers.Serializer):
 
 		if show_fields:
 		    # for multiple fields in a list
+		    show_fields.append('book_name')
 		    all_fields = set(self.fields.keys())
 		    remove_fields = all_fields - set(show_fields)
 		    remove_fields = list(remove_fields)

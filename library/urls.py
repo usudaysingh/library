@@ -23,5 +23,6 @@ urlpatterns = [
     url(r'^library/', include('library_app.urls', namespace='library-app')),
     url(r'^register/$',CreateNewUser.as_view({'post':'post'}), name='register-user'),
     url(r'^login/$',AuthView.as_view({'post':'login' ,'get':'loginview'}), name='login'),
-    url(r'^logout/$',AuthView.as_view({'get':'logout'}), name='logout')
+    url(r'^logout/$',AuthView.as_view({'get':'logout'}), name='logout'),
+    url(r'^kv/$', include('library_frontend.urls', namespace='library-frontend'))
 ]
