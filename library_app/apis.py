@@ -3,6 +3,7 @@ import requests
 import datetime
 
 from django.contrib.auth.models import User, Group
+from mongoengine.queryset.visitor import Q
 from django.utils import timezone 
 from rest_framework import viewsets
 from .models import Books, BookStatus, BooksFlow, AppUser #, Author, Publisher
@@ -51,6 +52,10 @@ class BookViewset(viewsets.ModelViewSet):
 		queryset = self.model.objects.all()
 		keys = self.request.query_params.keys()
 		if keys:
+			if 'search' in keys:
+				search_value = self.request.query_params.get('search')
+				queryset = queryset.filter(book_name = search_value)
+
 			if 'available' in keys:
 				value = self.request.query_params.get('available')
 				if value == 'true':
